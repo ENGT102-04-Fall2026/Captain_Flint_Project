@@ -1,0 +1,72 @@
+Pseudocode
+
+1. Variables (Fixed amounts)
+
+Set current_position = (0,0)
+Set clue_score = 0
+Set search_over = False
+Set battery = 100
+Set integrity = 100
+
+Read CSV --> 2d grid
+find dimensions of grid 
+
+2. Main loop
+
+While search_over is False:
+	Disp rover status (the current one, as well as the fixed amount variables)
+	Ask user for input (directional)
+
+3. Movement
+
+IF 
+	position is OUT of grid boundaries THEN
+	Disp "Outside perimeter"
+	CONTINUE to next loop
+ELSE
+
+Update rover position to new cords
+Calculate battery and integrity from CSV grid
+
+ENDIF
+
+
+
+4. Failure setup
+
+IF battery <= 10 THEN
+	PRINT "Battery low!"
+	SET search_over = TRUE
+	BREAK loop
+ELSE IF integrity <= 10 THEN 
+	PRINT "Hull Breach!"
+	SET search_over = TRUE
+	BREAK loop
+ENDIF
+
+5. Searching and Navigation
+Ask "Search this location?"
+
+IF location hasn't already been searched, THEN
+Mark location
+Check what category the location falls into:
+
+IF category = "Treasure"
+
+THEN Disp "Task completed! Treasure found!"
+
+SET search_over = TRUE
+
+BREAK loop
+
+ELSE IF category = "clue" THEN
+add points to clue_score
+
+ELSE IF category = "danger" THEN
+	add danger to integrity or battery
+ENDIF
+
+7. End data
+
+generate history graph (all variables)
+display verdict
