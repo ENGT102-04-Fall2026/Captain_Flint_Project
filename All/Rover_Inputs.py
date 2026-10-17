@@ -10,6 +10,15 @@ search_over = False
 searched_location = set()
 history = list()
 
+# Coordinate functions
+def get_target_coords(current_pos, cmd):
+    r, c = current_pos
+    move_map = {'N': (-1, 0), 'S': (1, 0), 'E': (0,1), 'W': (0, -1)}
+    dr, dc = move_map.get(cmd, (0, 0))
+    return (r + dr, c + dc)
+def is_within_bounds(target_pos, grid):
+    r, c = target_pos
+    return 0 <= r < len(grid) and 0 <= c < len(grid[0])
 # 2. Map setup
 def load_map(mission_training.csv)
 open('mission_training.csv', mode='r') as file:
