@@ -35,14 +35,20 @@ current_depth = 2.0
 total_time = 0.0
 
 # Coordinate functions
+directions = {
+    'forward':  (0, 1),    # y + 1
+    'backward': (0, -1),   # y - 1
+    'right':    (1, 0),    # x + 1
+    'left':     (-1, 0),   # x - 1
+}
+
 def get_target_coords(current_pos, cmd):
-    r, c = current_pos
-    move_map = {'N': (-1, 0), 'S': (1, 0), 'E': (0,1), 'W': (0, -1)}
-    dr, dc = move_map.get(cmd, (0, 0))
-    return (r + dr, c + dc)
-def is_within_bounds(target_pos, grid):
-    r, c = target_pos
-    return 0 <= r < len(grid) and 0 <= c < len(grid[0])
+    x, y = current_pos
+    dx, dy = directions[cmd]
+    return (x + dx, y + dy)
+def is_within_bounds(target_pos):
+    x, y = target_pos
+    return 0 <= x < max_cols and 0 <= y < max_rows
 # 2. Map setup
 def load_map(filename):
     with open(filename, mode='r') as file:
@@ -58,12 +64,19 @@ max_cols = len(grid[0])
 while search_over is False:
     print(f"Current Position: {position}, Battery: {Battery}%, Hull: {integrity}%")
 
-    cmd = input("Move (N/S/E/W): ").strip().upper()
-
-    target_pos = get_target_coords(position, cmd)
-    if not is_within_bounds(target_pos, grid):
-        print("Outside perimeter")
+    cmd = input("Move (Forward/Backward/Right/Left): ").strip().lower()
+    if cmd not in directions:                     
+        print("Unsupported direction. Use Forward, Backward, Right, or Left.")
         continue
+
+    target_pos = get_target_coords(position, cmd)  
+
+    if not is_within_bounds(target_pos):           
+        print("Outside perimeter")
+        continue                                   
+
+    position = target_pos           
+
 
     position = target_pos
     battery -= 1.5
