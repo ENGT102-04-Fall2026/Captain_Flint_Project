@@ -21,7 +21,9 @@ Update 2 - Wk 6
  - A lot of typos led to failure
     - "pos" not identified as position
     - battery vs Battery, etc
-
+Challenges
+ - First version didnt work. a LOT of reevaluating needs to be done
+ - invalid commands
 Update 3 - Wk 7
 
  - Added Fail and Success checks
@@ -30,6 +32,11 @@ Update 3 - Wk 7
  - Fixed code slightly
  - Not major change, needs to fix minor errors, add CSV add clue/hazard directory, + More
 
+Challenges
+- Not a lot of improvement
+- order of checks
+- Floating-point comparisons: values like 1.5 per move can accumulate rounding error near the 10% threshold.
+
  Update 4 - Wk 8
 
  - Most major changes to code:
@@ -37,3 +44,8 @@ Update 3 - Wk 7
   - Each location stores at_location, description, depth, distance, and time, converted to int or float.
   - pos = target_pos is now position = target_pos, so the rover actually moves.
  - more polish needs to be done reguarding continuity with load map, mission training, coordinates, hazard/clue
+
+Challenges
+- Lack of testing is causing blind success based of of "correct looking" code vs actual successful testing
+- Keeping the file path correct now that the CSV lives in data/
+- Fix trivial stuff
