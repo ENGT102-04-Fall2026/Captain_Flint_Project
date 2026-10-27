@@ -49,3 +49,14 @@ Challenges
 - Lack of testing is causing blind success based of of "correct looking" code vs actual successful testing
 - Keeping the file path correct now that the CSV lives in data/
 - Fix trivial stuff
+
+Update 4 - Wk 10
+    - Need to make updates reguarding changes in rubric, including:
+      No need for STAT-05
+      Change of the original detailed technical specification via announcement update
+
+    - Add update 5 stuff:
+      Complete integrated program flow
+      start to add tracking stats
+      add plotting for mission status
+      
