@@ -60,3 +60,12 @@ Update 4 - Wk 10
       start to add tracking stats
       add plotting for mission status
       
+   What was actually changed:
+    - The duplicate load_map function was removed
+    - Grid dimensions are calculated from the mission file, and the file name is requested at runtime so that the recovery file can be used without code changes
+    - Added further dictionaries, did some reasearch and revised the main loop
+    - Time, energy, and hull values are stored in history for a dual-axis plot, and the latest entry is replaced after a search so that the plot reflects the post-search state.
+    - Treasure is handled as an immediate success
+    - Completly gutted the original loop to be more percise and consistant:
+      - Placeholder battery was replaced with the  hull and energy loss formulas, using the previous depth in the calculation before the depth is updated, with rounding applied only to displayed values.
+Tomorrow I will reevaluate based off of announcement requirements.
