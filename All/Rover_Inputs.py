@@ -1,7 +1,8 @@
-# Import csu and load into dictionary
+# Import csv and load into dictionary
 import csv
 import os
 import matplotlib.pyplot as plt
+
 
 def load_map(filename):
     locations = {}
@@ -17,6 +18,7 @@ def load_map(filename):
                 "time": float(row[6]),
             }
     return locations
+
 
 filename = input("Mission file [data/mission_training.csv]: ").strip()
 if filename == "":
@@ -44,15 +46,14 @@ SIMPLE_NAMES = {
     "None": "Nothing", "Treasure": "Treasure",
 }
 
-position = (0,0)
+position = (0, 0)
 battery = 100
 integrity = 100
 clue_score = 0
-search_over = False
 searched_location = set()
 outcome = ""
 
-current_depth = grid[(0, 0)]["depth"]  
+current_depth = grid[(0, 0)]["depth"]
 total_time = 0.0
 
 history = [(0.0, battery, integrity)]
@@ -65,21 +66,38 @@ directions = {
     'left':     (-1, 0),   # x - 1
 }
 
+
 def get_target_coords(current_pos, cmd):
     x, y = current_pos
     dx, dy = directions[cmd]
     return (x + dx, y + dy)
 
+
 def is_within_bounds(target_pos):
     x, y = target_pos
-    return 0 <= x < max_cols and 0 <= y < max_rows
+    return 0 <= x < num_cols and 0 <= y < num_rows
 
 
-# 2. Map setup
-def load_map(filename):
-    with open(filename, mode='r') as file:
-        reader = csv.reader(file)
-        return [row for row in reader]
+# 2. Helper functions
+
+def print_status():
+    print(f"Position: {position} | Battery: {battery:.2f}% | "
+          f"Hull: {integrity:.2f}% | Clues: {clue_score}")
+
+
+def ask_yes_no(prompt):
+    while True:
+        answer = input(prompt).strip().lower()
+        if answer in ("yes", "y"):
+            return True
+        if answer in ("no", "n"):
+            return False
+        print("Please answer yes or no.")
+
+
+def is_failure():
+    return battery <= 0 or integrity <= 0
+
 
 def update_plot():
     times = [h[0] for h in history]
@@ -100,72 +118,77 @@ def update_plot():
 
 # 3. Main Loop
 
+plt.ion()
+
 while True:
     print(f"Current Position: {position}, Battery: {battery:.2f}%, Hull: {integrity:.2f}%")
 
-   cmd = input("Move (Forward/Backward/Right/Left): ").strip().lower()
+    # --- Movement ---
+    cmd = input("Move (Forward/Backward/Right/Left): ").strip().lower()
     if cmd not in directions:
         print("Unsupported direction. Use Forward, Backward, Right, or Left.")
         continue
+
     target_pos = get_target_coords(position, cmd)
     if not is_within_bounds(target_pos):
         print("Outside perimeter. No changes applied.")
         continue
 
- dest = grid[target_pos]
+    dest = grid[target_pos]
     depth_change = abs(dest["depth"] - current_depth)       # uses the OLD depth
     hull_loss = depth_change * 0.8 * dest["time"]
     energy_loss = depth_change * 0.5 + (dest["distance"] / dest["time"]) * 1.2
- 
+
     integrity -= hull_loss
     battery -= energy_loss
     total_time += dest["time"]
     position = target_pos
     current_depth = dest["depth"]
- 
+
     history.append((total_time, battery, integrity))
     update_plot()
     print(f"Energy loss: {energy_loss:.2f} | Hull loss: {hull_loss:.2f}")
     print_status()
 
-# 4. Outcomes
+    # Did the move itself break the rover?
+    if is_failure():
+        outcome = "FAILURE"
+        break
 
-
- # search command 
- if not ask_yes_no("Search this location? (yes/no): "):
+    # --- Search ---
+    if not ask_yes_no("Search this location? (yes/no): "):
         continue
+
     if position in searched_location:
         print("This location was already searched. No effects applied.")
         continue
- searched_location.add(position)
+
+    searched_location.add(position)
     category = dest["at_location"]
     print(f"Discovery: {SIMPLE_NAMES[category]} - {dest['description']}")
 
- if is_failure():                                    
-        outcome = "FAILURE"
-        break
-
-  if category == "Treasure":                           
+    if category == "Treasure":
         outcome = "SUCCESS (Treasure)"
         break
 
-hull_change, energy_change, clue_change = SEARCH_EFFECTS[category]
+    hull_change, energy_change, clue_change = SEARCH_EFFECTS[category]
     integrity += hull_change
     battery += energy_change
     clue_score += clue_change
- 
-    history[-1] = (total_time, battery, integrity)        
+
+    history[-1] = (total_time, battery, integrity)
     update_plot()
     print_status()
 
-     if is_failure():                                        # failure FIRST (SYS-08)
+    if is_failure():                    # failure FIRST
         outcome = "FAILURE"
         break
-    if clue_score >= 6:                                     # clue success SECOND
+    if clue_score >= 6:                 # clue success SECOND
         outcome = "SUCCESS (Clues)"
         break
 
-# Ending stuff
+# 4. Outcomes
+
 if outcome == "FAILURE":
     print("MISSION FAILED: energy/hull failed")
 elif outcome == "SUCCESS (Treasure)":
@@ -185,6 +208,6 @@ print(f"Clue score: {clue_score}")
 print(f"Locations searched: {len(searched_location)}")
 
 update_plot()
-os.makedirs("plots", exist_ok=True)        
+os.makedirs("plots", exist_ok=True)
 plt.savefig("plots/final_status_plot.png")
 plt.ioff()
