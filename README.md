@@ -71,3 +71,6 @@ Update 4 - Wk 10
     - Completly gutted the original loop to be more percise and consistant:
       - Placeholder battery was replaced with the  hull and energy loss formulas, using the previous depth in the calculation before the depth is updated, with rounding applied only to displayed values.
 Tomorrow I will reevaluate based off of announcement requirements.
+
+Update 5 - WK 10
+ 
