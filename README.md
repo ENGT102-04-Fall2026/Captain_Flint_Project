@@ -73,4 +73,11 @@ Update 4 - Wk 10
 Tomorrow I will reevaluate based off of announcement requirements.
 
 Update 5 - WK 10
- 
+- Did some beneficial testing. Realized that every time the rover moved, a graph appeared. It also crashed the code.
+- Removed the live chart that redrew after every move, because it made the window freeze (“Not Responding”) while waiting for input.
+- The chart now draws once at the end of the mission and is saved to plots/final_status_plot.png.
+- Replaced mission_training.csv with the updated version from the instructor’s announcement (start location now has distance_m = 1.0 and time_min = 1.0, which avoids a divide-by-zero error if the rover revisits (0, 0)).
+- Added encoding='utf-8' when opening the CSV file.
+- Re-tested the full program: movement, boundaries, invalid directions, searching, repeat searches, win and fail outcomes, and the final summary and chart all work as expected.
+
+Everything is updated and completed for code. 
